@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقييم الجاهزية للذكاء الاصطناعي 2026 | AI Readiness Assessment</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (xlsx) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Cairo', 'Inter', sans-serif;
+            background-color: #f4f5f7;
+        }
+        .sidebar-dark {
+            background-color: #0d1b2a;
+        }
+        .btn-slate-custom {
+            background-color: #9ba8a8;
+            color: #ffffff;
+        }
+        .btn-slate-custom:hover {
+            background-color: #839292;
+        }
+        .card-option {
+            transition: all 0.2s ease-in-out;
+        }
+        .card-option:hover {
+            border-color: #0d1b2a;
+            background-color: #f8fafc;
+        }
+        .card-option.selected {
+            border-color: #0d1b2a;
+            background-color: #f1f5f9;
+            box-shadow: 0 0 0 2px #0d1b2a;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-brain text-2xl text-slate-800"></i>
+                <span class="font-bold text-slate-900 text-lg" id="nav-title">تقييم الجاهزية للذكاء الاصطناعي</span>
+            </div>
+            <button onclick="toggleLanguage()" class="flex items-center gap-2 px-3 py-1.5 border border-slate-300 rounded-lg text-sm font-semibold hover:bg-slate-100 transition">
+                <i class="fa-solid fa-globe"></i>
+                <span id="lang-btn-text">English</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- SCREEN 1: WELCOME & RESPONDENT INFO -->
+    <section id="welcome-screen" class="max-w-3xl mx-auto px-4 py-12 flex-1 flex flex-col justify-center">
+        <div class="text-center mb-8">
+            <span class="text-slate-500 font-semibold text-sm tracking-wide block mb-2" id="w-badge">أداة تقييم مؤسسي • 34 سؤالاً • 5 محاور</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4" id="w-title">تقييم الجاهزية للذكاء الاصطناعي</h1>
+            <p class="text-slate-600 text-base leading-relaxed max-w-2xl mx-auto" id="w-desc">
+                استبانة لقياس نضج مؤسستكم في تبنّي الذكاء الاصطناعي عبر الرؤية والاستراتيجية، خارطة الطريق وحالات الاستخدام، التقنية والبيانات، المواهب والقدرات، والحوكمة. تستغرق الإجابة نحو 10–15 دقيقة، وستظهر النتائج والرسوم البيانية فور الانتهاء مع إمكانية تصديرها إلى ملف إكسل.
+            </p>
+        </div>
+
+        <!-- Metric Cards (Matching Image 1) -->
+        <div class="grid grid-cols-3 gap-4 mb-8 text-center">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-3xl font-black text-slate-900">5</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1" id="m-1">محاور رئيسية</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-3xl font-black text-slate-900">34</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1" id="m-2">سؤالاً</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div class="text-3xl font-black text-slate-900">4</div>
+                <div class="text-xs text-slate-500 font-semibold mt-1" id="m-3">مستويات نضج</div>
+            </div>
+        </div>
+
+        <!-- User Info Form -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 mb-6">
+            <div>
+                <label class="block text-slate-700 font-bold text-sm mb-1" id="lbl-name">اسم الشخص الذي يعبّئ الاستبانة *</label>
+                <input type="text" id="user-name" placeholder="مثال: محمد أحمد" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-800 text-sm">
+            </div>
+            <div>
+                <label class="block text-slate-700 font-bold text-sm mb-1" id="lbl-org">الجهة / الإدارة (اختياري)</label>
+                <input type="text" id="user-org" placeholder="مثال: وزارة كذا — إدارة التحول الرقمي" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-800 text-sm">
+            </div>
+        </div>
+
+        <button onclick="startAssessment()" class="w-full py-3.5 btn-slate-custom font-bold rounded-xl text-base shadow-sm transition" id="btn-start">
+            ابدأ التقييم
+        </button>
+        <p class="text-center text-xs text-slate-400 mt-3" id="w-footer">يمكنك التنقل بين الأسئلة بحرية، وستُحفظ إجاباتك محلياً في هذه الجلسة فقط.</p>
+    </section>
+
+    <!-- SCREEN 2: ASSESSMENT INTERFACE (Matching Image 2) -->
+    <section id="assessment-screen" class="hidden flex-1 flex flex-col md:flex-row min-h-[calc(100vh-57px)]">
+        <!-- Sidebar -->
+        <aside class="sidebar-dark text-white w-full md:w-80 p-6 flex flex-col justify-between shrink-0">
+            <div>
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-2" id="sb-score-title">النتيجة الحية</div>
+                <div class="flex items-baseline gap-2 mb-6">
+                    <span class="text-4xl font-extrabold" id="live-score-val">0.0</span>
+                    <span class="text-slate-400 text-sm" id="sb-out-of">من 4.0</span>
+                </div>
+
+                <hr class="border-slate-800 mb-6">
+
+                <!-- Progress Bars per Pillar -->
+                <div class="space-y-4" id="pillar-progress-list">
+                    <!-- Progress items injected dynamically -->
+                </div>
+            </div>
+
+            <div class="text-xs text-slate-500 mt-8" id="sb-footer">
+                تُحفظ إجاباتك في هذه الجلسة فقط، ولا تُشارك مع أي جهة.
+            </div>
+        </aside>
+
+        <!-- Main Question Area -->
+        <main class="flex-1 p-6 md:p-12 max-w-4xl mx-auto flex flex-col justify-between">
+            <div>
+                <!-- Question Header -->
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md" id="q-pillar-name">استراتيجية الذكاء الاصطناعي</span>
+                    <span class="text-xs font-semibold text-slate-400" id="q-counter">سؤال 1 من 34</span>
+                </div>
+
+                <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-6 leading-snug" id="q-text">
+                    1. هل لديكم رؤية واضحة وموثقة للذكاء الاصطناعي تتوافق مع استراتيجيتكم العامة والأولويات الوطنية؟
+                </h2>
+
+                <!-- Options -->
+                <div class="space-y-3" id="options-container">
+                    <!-- Options injected dynamically -->
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
+                <button onclick="prevQuestion()" id="btn-prev" class="px-6 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 text-sm">
+                    السابق
+                </button>
+                <button onclick="nextQuestion()" id="btn-next" class="px-8 py-2.5 btn-slate-custom rounded-xl font-bold text-sm shadow-sm">
+                    التالي
+                </button>
+            </div>
+        </main>
+    </section>
+
+    <!-- SCREEN 3: RESULTS & DASHBOARD -->
+    <section id="results-screen" class="hidden max-w-5xl mx-auto px-4 py-10 flex-1">
+        <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm mb-8 text-center">
+            <span class="text-emerald-600 font-bold text-xs uppercase tracking-wider block mb-1" id="r-badge">تم اكتمال التقييم بنجاح</span>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-2" id="r-title">تقرير نضج الجاهزية للذكاء الاصطناعي</h2>
+            <p class="text-slate-500 text-sm" id="r-sub">مُعدّ لـ: <span id="r-user-display" class="font-bold text-slate-800"></span></p>
+
+            <div class="mt-6 inline-flex flex-col items-center justify-center p-6 bg-slate-900 text-white rounded-2xl min-w-[200px]">
+                <span class="text-xs text-slate-400 font-semibold mb-1" id="r-score-lbl">المؤشر العام للنضج</span>
+                <span class="text-5xl font-black text-emerald-400" id="final-score">0.0</span>
+                <span class="text-xs text-slate-300 mt-1" id="final-level-str">من 4.0</span>
+            </div>
+
+            <div class="mt-6 flex justify-center gap-3">
+                <button onclick="exportExcel()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span id="btn-excel-text">تصدير التقرير إلى Excel</span>
+                </button>
+                <button onclick="location.reload()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition">
+                    إعادة التقييم
+                </button>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-4 text-center text-sm" id="chart1-title">النضج حسب المحاور الخمسة (Radar Chart)</h3>
+                <div class="relative h-64">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-4 text-center text-sm" id="chart2-title">النتيجة التفصيلية لكل محور (Bar Chart)</h3>
+                <div class="relative h-64">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Logic -->
+    <script>
+        let currentLang = 'ar';
+        let currentQIndex = 0;
+        let userAnswers = {}; // { qId: score }
+        let respondentInfo = { name: '', org: '' };
+
+        // DATA STRUCTURE: 5 Pillars / 34 Questions
+        const pillars = [
+            {
+                id: "p1",
+                title: { ar: "استراتيجية الذكاء الاصطناعي والقيادة", en: "AI Vision, Strategy & Leadership" },
+                maxScore: 7 * 4,
+                questions: [
+                    {
+                        id: "p1_1",
+                        text: { ar: "1. هل لديكم رؤية واضحة وموثقة للذكاء الاصطناعي تتوافق مع استراتيجيتكم العامة والأولويات الوطنية؟", en: "1. Do you have a clear, documented AI vision aligned with overall strategy and national priorities?" },
+                        options: [
+                            { score: 4, ar: "رؤية واضحة وقابلة للتنفيذ للذكاء الاصطناعي، تحدد المجالات ذات الأولوية، والنتائج التي تحقق قيمة عامة، ومقاييس النجاح القابلة للقياس، بما يتوافق مع استراتيجية المؤسسة والاستراتيجية الوطنية.", en: "Clear and actionable AI vision defining priority domains, public value, and measurable success metrics." },
+                            { score: 3, ar: "رؤية الذكاء الاصطناعي موثقة، لكنها لم تُرسَّخ بالكامل بعد على مستوى المؤسسة.", en: "AI vision is documented but not yet fully embedded across the organization." },
+                            { score: 2, ar: "توجد رؤية أولية للذكاء الاصطناعي، لكنها غير واضحة أو غير موثقة أو غير متوافقة مع الاستراتيجية.", en: "Initial AI vision exists but is vague, undocumented, or misaligned with strategy." },
+                            { score: 1, ar: "لا توجد رؤية محددة للذكاء الاصطناعي.", en: "No defined AI vision." }
+                        ]
+                    },
+                    {
+                        id: "p1_2",
+                        text: { ar: "2. إلى أي مدى تتوافق أولويات الذكاء الاصطناعي بين القيادة ووحدات العمل، مقابل إدارتها بصورة منعزلة؟", en: "2. To what extent are AI priorities aligned across leadership and business units versus driven in silos?" },
+                        options: [
+                            { score: 4, ar: "أولويات الذكاء الاصطناعي متوافقة ومنسقة بالكامل، وتُنفَّذ على مستوى المؤسسة بأكملها.", en: "AI priorities are fully aligned, coordinated, and executed enterprise-wide." },
+                            { score: 3, ar: "يوجد توافق واسع بين القيادات، مع استمرار بعض أوجه العمل المنعزل بين الوحدات.", en: "Broad leadership alignment exists, with some remaining silos across units." },
+                            { score: 2, ar: "يوجد توافق جزئي بين القيادات، لكن مبادرات الذكاء الاصطناعي لا تزال تُنفَّذ إلى حد كبير بصورة منعزلة.", en: "Partial leadership alignment exists, but AI initiatives remain largely siloed." },
+                            { score: 1, ar: "أولويات الذكاء الاصطناعي منعزلة ومجزأة، وتفتقر إلى التوافق بين القيادات.", en: "AI priorities are siloed, fragmented, and lack leadership alignment." }
+                        ]
+                    },
+                    {
+                        id: "p1_3",
+                        text: { ar: "3. ما مدى توافق قيادتكم بشأن أولويات الذكاء الاصطناعي وتوجهاته، وهل يتبنى المسؤولون التنفيذيون رؤية متسقة لدوره في المؤسسة ومدى إلحاح تبنّيه؟", en: "3. How aligned is your leadership on AI priorities and urgency?" },
+                        options: [
+                            { score: 4, ar: "يُعد الذكاء الاصطناعي أولوية على مستوى القيادة، مع فهم مشترك راسخ وتوافق واضح بين الإدارات.", en: "AI is a leadership priority with strong shared understanding across departments." },
+                            { score: 3, ar: "تدرك القيادة أهمية الذكاء الاصطناعي، ويوجد توافق جزئي، لكن ترتيب أولوياته لا يزال غير متسق بين الوحدات.", en: "AI is recognized as important, with partial alignment across units." },
+                            { score: 2, ar: "وعي القيادة بإمكانات الذكاء الاصطناعي محدود، والتوافق بشأن الأولويات غير متسق.", en: "Leadership has limited awareness and inconsistent alignment." },
+                            { score: 1, ar: "لم تتوصل القيادة إلى توافق بشأن الذكاء الاصطناعي.", en: "Leadership has not aligned on AI." }
+                        ]
+                    },
+                    {
+                        id: "p1_4",
+                        text: { ar: "4. هل توجد مخصصات استثمارية للذكاء الاصطناعي محددة بوضوح ومحمية من إعادة التخصيص، ومنفصلة عن موازنات تقنية المعلومات الأساسية؟", en: "4. Is there a clearly defined and protected AI investment envelope distinct from core IT budgets?" },
+                        options: [
+                            { score: 4, ar: "يوجد نهج استثماري للذكاء الاصطناعي يخضع لحوكمة واضحة ويدعم التجريب وبناء القدرات بتمويل يتجاوز التمويل الأساسي لتقنية المعلومات.", en: "Clearly governed AI investment approach beyond core IT funding." },
+                            { score: 3, ar: "توجد مخصصات استثمارية محددة للذكاء الاصطناعي للمبادرات ذات الأولوية.", en: "Defined AI investment envelope for priority initiatives." },
+                            { score: 2, ar: "يُقدَّم التمويل حسب الحاجة أو على أساس مشروعات تجريبية.", en: "Ad hoc or pilot-based funding." },
+                            { score: 1, ar: "لا توجد استثمارات محددة للذكاء الاصطناعي خارج تمويل تقنية المعلومات.", en: "No defined AI investment beyond IT." }
+                        ]
+                    },
+                    {
+                        id: "p1_5",
+                        text: { ar: "5. هل يُتعامل مع الذكاء الاصطناعي بوصفه عامل تمكين استراتيجياً للتحول، وليس مجرد مشروع تقني مستقل؟", en: "5. Is AI treated as a strategic enabler of transformation rather than a standalone IT project?" },
+                        options: [
+                            { score: 4, ar: "يُعد الذكاء الاصطناعي محركاً رئيسياً للتحول على مستوى المؤسسة بأكملها.", en: "AI positioned as a key driver of organization-wide transformation." },
+                            { score: 3, ar: "يُدمَج الذكاء الاصطناعي في مبادرات عمل مختارة.", en: "AI integrated into select business initiatives." },
+                            { score: 2, ar: "يُستخدم الذكاء الاصطناعي أساساً لتحسين الكفاءة أو الأتمتة.", en: "AI used mainly for efficiency or automation improvements." },
+                            { score: 1, ar: "يُنظر إلى الذكاء الاصطناعي بوصفه نشاطاً منفصلاً أو تجريبياً.", en: "AI viewed as isolated or experimental." }
+                        ]
+                    },
+                    {
+                        id: "p1_6",
+                        text: { ar: "6. هل رؤيتكم للذكاء الاصطناعي قابلة للقياس، وتتضمن نتائج واضحة للنجاح ومقاييس أو مؤشرات أداء رئيسية محددة؟", en: "6. Is your AI vision measurable with defined KPIs to evaluate progress?" },
+                        options: [
+                            { score: 4, ar: "توجد مقاييس موحدة وواضحة للنجاح ومؤشرات أداء رئيسية للذكاء الاصطناعي تُتابَع وتُستخدم لتوجيه اتخاذ القرارات.", en: "Clear, standardized AI metrics and KPIs guide decision-making." },
+                            { score: 3, ar: "توجد بعض مؤشرات الأداء الرئيسية للذكاء الاصطناعي لمبادرات مختارة لكن توحيدها محدود.", en: "Some AI KPIs exist for selected initiatives with limited standardization." },
+                            { score: 2, ar: "توجد أهداف غير رسمية للذكاء الاصطناعي، لكنها لا تُقاس بصورة منتظمة.", en: "Informal AI goals exist but are not consistently measured." },
+                            { score: 1, ar: "لا توجد أهداف أو مؤشرات أداء رئيسية للذكاء الاصطناعي.", en: "No AI goals or KPIs exist." }
+                        ]
+                    },
+                    {
+                        id: "p1_7",
+                        text: { ar: "7. هل تُعمَّم رؤيتكم للذكاء الاصطناعي وتُفهَم على مستوى المؤسسة بحيث يدرك الموظفون ما يعنيه الذكاء الاصطناعي لعملهم؟", en: "7. Is your AI vision communicated and understood across all levels of the organization?" },
+                        options: [
+                            { score: 4, ar: "تُعمَّم رؤية الذكاء الاصطناعي على نطاق واسع، وتفهمها معظم الوحدات، وتُستخدم لتوجيه التخطيط والتنفيذ.", en: "AI vision is widely communicated, understood, and used for planning." },
+                            { score: 3, ar: "تُعمَّم رؤية الذكاء الاصطناعي داخلياً، لكنها ليست مفهومة جيداً في جميع الإدارات.", en: "AI vision is communicated but not fully understood across all units." },
+                            { score: 2, ar: "تُشارَك رؤية الذكاء الاصطناعي مع عدد قليل من الفرق فقط.", en: "AI vision is shared with a few teams only." },
+                            { score: 1, ar: "لم تُعمَّم رؤية الذكاء الاصطناعي.", en: "AI vision has not been communicated." }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "p2",
+                title: { ar: "تطوير حالات الاستخدام وركائز القيمة", en: "Roadmap, Use Cases & Value Delivery" },
+                maxScore: 9 * 4,
+                questions: [
+                    {
+                        id: "p2_1",
+                        text: { ar: "8. هل لديكم خارطة طريق للذكاء الاصطناعي تتضمن قائمة بحالات الاستخدام مرتبة حسب الأولوية مع جداول زمنية ومسؤولين وأثر متوقع؟", en: "8. Do you have a prioritized AI roadmap with timelines, owners, and expected impact?" },
+                        options: [
+                            { score: 4, ar: "توجد خارطة طريق شاملة للذكاء الاصطناعي تتوافق مع الاستراتيجية، وتحدد بوضوح المسؤوليات والجداول والاعتماديات وتخضع لمراجعات دورية.", en: "Comprehensive AI roadmap with ownership, timelines, and regular reviews." },
+                            { score: 3, ar: "توجد خارطة طريق موثقة تتضمن حالات استخدام مختارة، لكن وضوح التنفيذ يتفاوت بين المبادرات.", en: "Documented AI roadmap exists, execution clarity varies." },
+                            { score: 2, ar: "توجد مسودة لخارطة الطريق، لكنها تفتقر إلى الوضوح بشأن الجداول الزمنية والمسؤوليات.", en: "Draft roadmap exists but lacks clarity on timelines/ownership." },
+                            { score: 1, ar: "لا توجد خارطة طريق محددة للذكاء الاصطناعي.", en: "No defined AI roadmap." }
+                        ]
+                    },
+                    {
+                        id: "p2_2",
+                        text: { ar: "9. إلى أي مدى تؤثر اعتبارات توسيع النطاق في ترتيب أولويات حالات استخدام الذكاء الاصطناعي واختيارها؟", en: "9. To what extent do scaling considerations influence use case prioritization?" },
+                        options: [
+                            { score: 4, ar: "تُعد إمكانية توسيع النطاق معياراً أساسياً للاختيار، وتضمن أطر التقييم الموحدة إعطاء الأولوية الاستثمارية للحلول ذات الأثر الكبير.", en: "Scaling potential is a core selection criterion with standardized frameworks." },
+                            { score: 3, ar: "تُدرَج اعتبارات توسيع النطاق ضمن عملية الاختيار، لكن المعايير قد تختلف بين الفرق.", en: "Scaling considerations included, but criteria vary across teams." },
+                            { score: 2, ar: "يوجد بعض الوعي بإمكانية توسيع النطاق، لكنها لا تُؤخذ في الحسبان بصورة متسقة.", en: "Inconsistent awareness of scaling potential in decisions." },
+                            { score: 1, ar: "تُختار حالات الاستخدام بصورة ارتجالية، ولا تُراعى قابلية التوسع.", en: "Ad hoc selection; scalability is ignored." }
+                        ]
+                    },
+                    {
+                        id: "p2_3",
+                        text: { ar: "10. هل لديكم حالات استخدام للذكاء الاصطناعي تعمل بصورة تشغيلية كاملة وتحقق قيمة فعلية؟", en: "10. Do you have AI use cases fully operational and actively delivering value?" },
+                        options: [
+                            { score: 4, ar: "تُطبَّق حلول متعددة للذكاء الاصطناعي على نطاق واسع عبر وظائف العمل، وتحقق قيمة مستدامة وقابلة للقياس.", en: "Multiple AI solutions deployed at scale delivering sustained value." },
+                            { score: 3, ar: "تعمل بعض حالات استخدام الذكاء الاصطناعي بصورة تشغيلية وتحقق قيمة في مجالات مختارة.", en: "Some AI use cases are operational and delivering value in select areas." },
+                            { score: 2, ar: "توجد مشروعات تجريبية أو نماذج لإثبات المفهوم، لكنها لم تُطبَّق تشغيلياً.", en: "AI pilots or proofs of concept exist but not operationally deployed." },
+                            { score: 1, ar: "لا توجد حالات استخدام للذكاء الاصطناعي تعمل بصورة تشغيلية.", en: "No AI use cases are operational." }
+                        ]
+                    },
+                    {
+                        id: "p2_4",
+                        text: { ar: "11. إلى أي مدى لديكم حالات استخدام تركز على تحسين تقديم الخدمات العامة للمواطنين؟", en: "11. To what extent do you have AI use cases focused on public service delivery?" },
+                        options: [
+                            { score: 4, ar: "تُطبَّق حالات استخدام متعددة على نطاق واسع تركز على تحسين الخدمات ورضا المواطنين وتخفيض زمن وتكلفة المعاملات.", en: "Multiple AI use cases deployed at scale improving citizen services." },
+                            { score: 3, ar: "تعمل بعض حالات استخدام الذكاء الاصطناعي في خدمات عامة مختارة.", en: "Some AI use cases operational in select public service areas." },
+                            { score: 2, ar: "توجد مشروعات تجريبية لم تُنشر تشغيلياً بعد.", en: "Public service AI pilots exist but not operationally deployed." },
+                            { score: 1, ar: "لا توجد حالات استخدام تشغيلية تركز على تقديم الخدمات العامة.", en: "No operational AI use cases for public services." }
+                        ]
+                    },
+                    {
+                        id: "p2_5",
+                        text: { ar: "12. إلى أي مدى توظفون الذكاء الاصطناعي لدعم صياغة السياسات القائمة على الأدلة والنمذجة التنبؤية؟", en: "12. To what extent is AI leveraged for evidence-based policy making?" },
+                        options: [
+                            { score: 4, ar: "يُوظَّف الذكاء الاصطناعي بصورة شاملة لدعم صياغة السياسات والنمذجة التنبؤية ومحاكاة السياسات ورصد الامتثال.", en: "AI comprehensively leveraged for predictive policy modeling and simulation." },
+                            { score: 3, ar: "يُوظَّف الذكاء الاصطناعي لدعم بعض جوانب صياغة السياسات.", en: "AI leveraged for select policy-making aspects." },
+                            { score: 2, ar: "يُوظَّف الذكاء الاصطناعي بصورة غير منهجية وحسب الحاجة.", en: "Ad hoc policy AI usage." },
+                            { score: 1, ar: "لا يُوظَّف الذكاء الاصطناعي في صياغة السياسات.", en: "AI is not used for policy making." }
+                        ]
+                    },
+                    {
+                        id: "p2_6",
+                        text: { ar: "13. هل لديكم عملية محددة لاتخاذ القرار بشأن بناء حلول مخصصة، شراء حلول جاهزة، أو تكييف أدوات الذكاء الاصطناعي التوليدي؟", en: "13. Do you have a structured Build vs. Buy vs. Adapt decision process?" },
+                        options: [
+                            { score: 4, ar: "يُطبَّق إطار موحد لاتخاذ القرار على جميع حالات الاستخدام ويوجه الاختيار بين البناء أو الشراء أو التكييف.", en: "Standardized decision framework applied across all AI use cases." },
+                            { score: 3, ar: "يوجد إطار لاتخاذ القرار للمشاريع الرئيسية، لكنه لا يُطبَّق بصورة متسقة.", en: "Decision framework exists for key cases but applied inconsistently." },
+                            { score: 2, ar: "تُتَّخذ القرارات بصورة ارتجالية أو غير رسمية.", en: "Ad hoc decisions for major use cases." },
+                            { score: 1, ar: "لا توجد عملية منظمة لاتخاذ قرارات المفاضلة.", en: "No structured build vs buy process." }
+                        ]
+                    },
+                    {
+                        id: "p2_7",
+                        text: { ar: "14. هل ترتبط حالات استخدام الذكاء الاصطناعي بأثر وقيمة قابلين للقياس وتقيَّم بمؤشرات أداء واضحة؟", en: "14. Are AI use cases linked to measurable impact evaluated via KPIs?" },
+                        options: [
+                            { score: 4, ar: "يُقاس أثر الذكاء الاصطناعي بصورة متسقة باستخدام مؤشرات أداء موحدة توجه قرارات الاستثمار.", en: "AI impact consistently measured with standard KPIs guiding investments." },
+                            { score: 3, ar: "توجد مؤشرات أداء لبعض حالات الاستخدام مع تفاوت المتابعة.", en: "Clear KPIs for some use cases, tracking varies across teams." },
+                            { score: 2, ar: "تتضمن بعض الحالات متابعة غير رسمية، لكن القياس غير متسق.", en: "Informal impact tracking, measurement is inconsistent." },
+                            { score: 1, ar: "لا ترتبط حالات استخدام الذكاء الاصطناعي بأثر أو نتائج قابلة للقياس.", en: "AI use cases not linked to measurable impact." }
+                        ]
+                    },
+                    {
+                        id: "p2_8",
+                        text: { ar: "15. هل تتبنون نهجاً منظمًا يقوم على «الفشل السريع والتعلم السريع» في تجارب الذكاء الاصطناعي؟", en: "15. Do you adopt a structured 'fail fast, learn fast' experimentation culture?" },
+                        options: [
+                            { score: 4, ar: "تترسخ ثقافة التجريب السريع؛ تختبر الفرق الأفكار بسرعة، وتوسع الناجح، وتوقف الفاشل بحسم.", en: "High-velocity experimentation culture; scale what works, stop what doesn't." },
+                            { score: 3, ar: "يوجد إطار محدد للتجريب بمعايير اختبار وإيقاف، لكن السرعة تتفاوت.", en: "Defined framework for testing/terminating, speed varies." },
+                            { score: 2, ar: "تُجرى بعض التجارب، لكن عمليات التقييم والإيقاف غير متسقة.", en: "Inconsistent evaluation/termination of experiments." },
+                            { score: 1, ar: "التجريب بطيء أو غائب، وتستمر المبادرات الفاشلة لغموض القرارات.", en: "Slow/nonexistent experimentation; failed projects persist." }
+                        ]
+                    },
+                    {
+                        id: "p2_9",
+                        text: { ar: "16. هل لديكم عمليات لجمع الدروس المستفادة من مبادرات الذكاء الاصطناعي وتوثيقها لبناء المعرفة المؤسسية؟", en: "16. Do you systematically capture and reuse learnings to build institutional knowledge?" },
+                        options: [
+                            { score: 4, ar: "يُطبَّق نظام شامل للتعلم يتضمن مراجعات بعد التنفيذ ومستودعات معرفة مركزية وإعادة استخدام منهجية.", en: "Comprehensive learning system with post-reviews and centralized knowledge reuse." },
+                            { score: 3, ar: "توجد عملية منظمة لجمع الدروس وتوثيقها ومشاركتها مع الفرق المعنية.", en: "Structured process to document and share learnings across relevant teams." },
+                            { score: 2, ar: "تُجمع بعض الدروس بصورة غير رسمية والتوثيق غير متسق.", en: "Some learnings captured informally, inconsistent sharing." },
+                            { score: 1, ar: "لا توجد آليات رسمية لجمع الدروس المستفادة وتظل حبيسة الفرق.", en: "No formal mechanisms; insights remain siloed." }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "p3",
+                title: { ar: "التكنولوجيا والبيانات والبنية التحتية", en: "Technology, Data & AI Architecture" },
+                maxScore: 7 * 4,
+                questions: [
+                    {
+                        id: "p3_1",
+                        text: { ar: "17. هل لديكم معمارية تقنية للذكاء الاصطناعي ملائمة تدعم حالات الاستخدام والنشر الآمن؟", en: "17. Do you have a fit-for-purpose AI technology architecture?" },
+                        options: [
+                            { score: 4, ar: "توجد معمارية متكاملة للذكاء الاصطناعي تدعم النشر الآمن والقابل للتوسع عبر الأنظمة.", en: "Fit-for-purpose architecture supporting secure scalable deployment." },
+                            { score: 3, ar: "توجد معمارية عامة مطبقة جزئياً.", en: "High-level architecture exists with partial implementation." },
+                            { score: 2, ar: "توجد مكونات مجزأة وتُطبَّق بصورة غير متسقة.", en: "Fragmented components inconsistently applied." },
+                            { score: 1, ar: "لا توجد معمارية أو إطار تقني للذكاء الاصطناعي.", en: "No AI architecture or framework." }
+                        ]
+                    },
+                    {
+                        id: "p3_2",
+                        text: { ar: "18. هل البنية التحتية الحاسوبية مناسبة لأعباء عمل الذكاء الاصطناعي ومتوافقة مع السيادة والأمن؟", en: "18. Is your computing infrastructure appropriate for AI workloads (GPUs, Cloud, Sovereignty)?" },
+                        options: [
+                            { score: 4, ar: "تدعم البنية التحتية أعباء العمل بموثوقية، مع توافق القدرات والسيادة والأمان.", en: "Infrastructure reliably supports AI workloads aligned with sovereignty and GPUs." },
+                            { score: 3, ar: "تُدعَم أعباء العمل ببيئة سحابية هجينة أو سيادية لاحتياجات مختارة.", en: "Hybrid/sovereign cloud supports select needs." },
+                            { score: 2, ar: "قدرات محدودة لوحدات GPU مع أدنى حد من التنسيق.", en: "Limited GPU capacity with minimal orchestration." },
+                            { score: 1, ar: "بنية تقليدية غير مهيأة للذكاء الاصطناعي.", en: "Traditional infrastructure not optimized for AI." }
+                        ]
+                    },
+                    {
+                        id: "p3_3",
+                        text: { ar: "19. هل لديكم عمليات وضوابط لتتبع منشأ البيانات (Data Lineage) ورصد التحيز وحوكمتها؟", en: "19. Do you have controls for data lineage, quality, and bias monitoring?" },
+                        options: [
+                            { score: 4, ar: "حوكمة بيانات متقدمة تضمن تصنيف الجودة، تتبع المسار، ورصد التحيز والفسير.", en: "Strong data governance ensuring classification, lineage, and bias monitoring." },
+                            { score: 3, ar: "سياسات حوكمة قياسية تغطي بعض جوانب إدارة بيانات الذكاء الاصطناعي.", en: "Standard governance policies cover some AI data management." },
+                            { score: 2, ar: "فحوصات جودة يدوية وغير منتظمة.", en: "Inconsistent manual quality checks." },
+                            { score: 1, ar: "لا توجد عمليات لإدارة جودة البيانات أو تتبع المنشأ.", en: "No processes to manage data quality or lineage." }
+                        ]
+                    },
+                    {
+                        id: "p3_4",
+                        text: { ar: "20. هل تستخدمون منصات التكامل وAPIs لدمج الذكاء الاصطناعي في مسارات العمل المؤسسية؟", en: "20. Are you leveraging integration platforms/APIs to embed AI into workflows?" },
+                        options: [
+                            { score: 4, ar: "منصات APIs تتيح دمج الذكاء الاصطناعي بسلاسة في الخدمات ومسارات العمل الأساسية.", en: "Enterprise APIs embed AI seamlessly into core workflows." },
+                            { score: 3, ar: "واجهات APIs تدعم التكامل مع بعض العمليات.", en: "APIs support integration into select business processes." },
+                            { score: 2, ar: "عمليات تكامل محدودة تُنفَّذ حسب الحاجة.", en: "Ad hoc integrations with limited reuse." },
+                            { score: 1, ar: "عمليات التكالم شبه معدومة.", en: "Minimal or non-existent integrations." }
+                        ]
+                    },
+                    {
+                        id: "p3_5",
+                        text: { ar: "21. هل توفرون أدوات ذكاء اصطناعي مناسبة لفئات المستخدمين المختلفة لدعم العمل اليومي؟", en: "21. Do you provide role-appropriate AI tools for various employee groups?" },
+                        options: [
+                            { score: 4, ar: "أدوات مخصصة ومناسبة للأدوار تتوافر لكافة الفئات وتُستخدم في العمليات اليومية.", en: "Role-appropriate tools actively used in day-to-day operations." },
+                            { score: 3, ar: "أدوات متوافرة للتقنيين والتنفيذيين لكن التبني محدود.", en: "Tools available for technical/business users, limited adoption." },
+                            { score: 2, ar: "تقتصر الأدوات على المستخدمين التقنيين فقط.", en: "Tools limited to technical users only." },
+                            { score: 1, ar: "لا تتوافر أدوات ذكاء اصطناعي للموظفين.", en: "No AI tools available to employees." }
+                        ]
+                    },
+                    {
+                        id: "p3_6",
+                        text: { ar: "22. هل أقمتم شراكات استراتيجية مع موردي التقنية للابتكار والتطوير المشترك للحلول؟", en: "22. Have you established strategic partnerships with AI vendors for co-development?" },
+                        options: [
+                            { score: 4, ar: "شراكات استراتيجية تدفع التطوير المشترك والابتكار التشاركي على نطاق واسع.", en: "Strategic vendor partnerships driving co-development and innovation." },
+                            { score: 3, ar: "شراكات نشطة لمشاريع أو تصميمات محددة.", en: "Active partnerships for select projects/co-design." },
+                            { score: 2, ar: "علاقات محدودة لشراء الأدوات والدعم فقط.", en: "Limited vendor relationships for tools purchasing/support." },
+                            { score: 1, ar: "لا توجد شراكات رسمية.", en: "No formal partnerships exist." }
+                        ]
+                    },
+                    {
+                        id: "p3_7",
+                        text: { ar: "23. إلى أي مدى تمتلكون الأسس التقنية لنشر وكلاء ذكاء اصطناعي (Autonomous AI Agents) بأمان؟", en: "23. Do you have technical foundations to safely deploy autonomous AI agents?" },
+                        options: [
+                            { score: 4, ar: "أسس متقدمة لنشر وكلاء باستقلالية منضبطة تشمل المراقبة، التسجيل، والتدخل البشري للقرارات الحرجة.", en: "Advanced foundations for controlled agent autonomy, orchestration, and auditability." },
+                            { score: 3, ar: "نشر وكلاء باستقلالية مقيدة مع حدود تنفيذ وتدخل بشري.", en: "Agents deployed with constrained autonomy and human intervention." },
+                            { score: 2, ar: "تجارب محدودة مع إشراف يدوي مستمر.", en: "Limited experimentation with manual oversight." },
+                            { score: 1, ar: "لا تدعم المؤسسة وكلاء الذكاء الاصطناعي وتقتصر الحلول على مهام منفردة.", en: "No support for autonomous AI agents." }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "p4",
+                title: { ar: "المواهب والقدرات وجاهزية الكوادر", en: "Talent, Capabilities & Workforce Readiness" },
+                maxScore: 5 * 4,
+                questions: [
+                    {
+                        id: "p4_1",
+                        text: { ar: "24. هل لديكم خبرات داخلية متخصصة في الذكاء الاصطناعي (علماء بيانات، مهندسين، محللين)؟", en: "24. Do you have internal AI expertise (data scientists, ML engineers)?" },
+                        options: [
+                            { score: 4, ar: "فريق داخلي قوي ومتكامل يتمتع بخبرات متعمقة تدعم المبادرات المؤسسية.", en: "Strong internal AI team with deep expertise supporting the enterprise." },
+                            { score: 3, ar: "خبراء داخليون لدعم وظائف ومشروعات محددة.", en: "In-house experts support select functions and projects." },
+                            { score: 2, ar: "مهارات داخلية شحيحة مع اعتماد كبير على الموردين الخارجيين.", en: "Limited internal skills, heavy reliance on vendors." },
+                            { score: 1, ar: "لا توجد خبرات داخلية في الذكاء الاصطناعي.", en: "No internal AI expertise." }
+                        ]
+                    },
+                    {
+                        id: "p4_2",
+                        text: { ar: "25. هل توجد برامج منظمة ومحدثة لبناء قدرات الذكاء الاصطناعي عبر كافة الفرق؟", en: "25. Are there structured programs to build AI capabilities across teams?" },
+                        options: [
+                            { score: 4, ar: "برنامج منظم لبناء وتحسين المهارات قائم على الأدوار وتدريبه محدث بانتظام.", en: "Structured, role-based upskilling program regularly updated." },
+                            { score: 3, ar: "تدريب رسمي يتوافر لأدوار وظيفية محددة بتغطية جزئية.", en: "Formal AI training available for selected roles." },
+                            { score: 2, ar: "جلسات توعوية غير منتظمة دون مسارات تعلم منظمة.", en: "Occasional awareness sessions without structured paths." },
+                            { score: 1, ar: "لا توجد برامج للتدريب أو بناء القدرات.", en: "No training or capability-building programs." }
+                        ]
+                    },
+                    {
+                        id: "p4_3",
+                        text: { ar: "26. إلى أي مدى يترسخ الإلمام بالذكاء الاصطناعي والوعي بأخلاقياته لدى القيادة والموظفين؟", en: "26. Is AI literacy and ethics training embedded across leadership and staff?" },
+                        options: [
+                            { score: 4, ar: "ترسخ التدريب على الإلمام بالذكاء الاصطناعي وأخلاقياته واستخدامه المسؤول لضمان التبني الواعي.", en: "AI literacy and ethics embedded enterprise-wide for responsible use." },
+                            { score: 3, ar: "برامج منظمة لأدوار محددة وتغطية مؤسسية محدودة.", en: "Structured literacy programs for specific roles." },
+                            { score: 2, ar: "جلسات توعوية أحيانًا تستهدف فئات قليلة.", en: "Occasional sessions targeting few groups." },
+                            { score: 1, ar: "لا توجد برامج للإلمام بالذكاء الاصطناعي.", en: "No AI literacy or awareness programs." }
+                        ]
+                    },
+                    {
+                        id: "p4_4",
+                        text: { ar: "27. هل تتعاونون مع المراكز البحثية والأكاديمية لتسهيل نقل المعرفة وبناء القدرات التطبيقية؟", en: "27. Do you collaborate with research institutions for applied AI knowledge transfer?" },
+                        options: [
+                            { score: 4, ar: "تعاون منظم وطويل الأمد مع مؤسسات بحثية للنهوض بالتطبيقات العملية.", en: "Long-term structured collaborations with research hubs." },
+                            { score: 3, ar: "شراكات مع مؤسسات مختارة لمشاريع محددة.", en: "Partnerships with select institutions for specific projects." },
+                            { score: 2, ar: "تعاون غير رسمي أو لمرة واحدة بنتائج محدودة.", en: "Informal or one-off collaborations with limited outcomes." },
+                            { score: 1, ar: "لا يوجد تعاون مع مراكز بحثية.", en: "No collaboration with research institutions." }
+                        ]
+                    },
+                    {
+                        id: "p4_5",
+                        text: { ar: "28. هل المؤسسة مستعدة لتطوير مهارات موظفيها وإعادة توزيعهم وظيفياً مع تطور التقنيات؟", en: "28. Is the organization prepared to continuously upskill and redeploy workforce?" },
+                        options: [
+                            { score: 4, ar: "برامج شاملة تتيح التطوير المستمر، إعادة التدريب، وإعادة التوزيع الوظيفي لمواكبة التطورات.", en: "Enterprise-wide continuous upskilling, retraining, and redeployment." },
+                            { score: 3, ar: "برامج منظمة تدعم تبني الذكاء الاصطناعي للأدوار ذات الأولوية.", en: "Structured upskilling supports priority roles." },
+                            { score: 2, ar: "جهود إعادة تدريب غير متسقة حسب الحاجة.", en: "Ad hoc retraining efforts with limited coverage." },
+                            { score: 1, ar: "لا يوجد نهج منظم لإعادة تدريب أو توزيع الموظفين.", en: "No structured approach to retrain or redeploy staff." }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "p5",
+                title: { ar: "الحوكمة والنموذج التشغيلي والذكاء المسؤول", en: "Governance, Operating Model & Responsible AI" },
+                maxScore: 6 * 4,
+                questions: [
+                    {
+                        id: "p5_1",
+                        text: { ar: "29. هل لديكم إطار رسمي لحوكمة الذكاء الاصطناعي ينظم صلاحيات اتخاذ القرار والإشراف ودورة الحياة؟", en: "29. Do you have a formal AI governance framework for lifecycle controls?" },
+                        options: [
+                            { score: 4, ar: "إطار حوكمة ناضج وشامل مطبق بالكامل ويُحدَّث بانتظام لمواكبة المعايير.", en: "Mature enterprise-wide governance framework fully embedded." },
+                            { score: 3, ar: "إطار رسمي يتضمن سياسات واضحة توجه التطوير والنشر لدى معظم الفرق.", en: "Formal framework with clear policies guiding development." },
+                            { score: 2, ar: "عناصر حوكمة أساسية غير رسمية ولا تُعتمَد بصورة متسقة.", en: "Basic governance elements, informal or inconsistent." },
+                            { score: 1, ar: "لا توجد حوكمة رسمية للذكاء الاصطناعي.", en: "No formal AI governance exists." }
+                        ]
+                    },
+                    {
+                        id: "p5_2",
+                        text: { ar: "30. هل الأدوار والصلاحيات والمسؤوليات محددة بوضوح بين فرق العمل والفرق التقنية؟", en: "30. Are roles, responsibilities, and decision rights clearly defined across teams?" },
+                        options: [
+                            { score: 4, ar: "أدوار ومسؤوليات واضحة تضمن حوكمة منسقة ومساءلة مشتركة بين القادة.", en: "Well-defined roles ensuring shared leadership accountability." },
+                            { score: 3, ar: "أدوار وصلاحيات واضحة ولكن التنفيذ قد يتفاوت بين الوحدات.", en: "Clear decision rights exist, execution varies by unit." },
+                            { score: 2, ar: "حُدِّدت بعض الأدوار لكن المسؤوليات مجزأة وغير مفهومة جيدا.", en: "Fragmented roles, not widely understood." },
+                            { score: 1, ar: "لا يوجد توزيع واضح للمسؤوليات والقرارات تعتمد على جهود فردية.", en: "No clear responsibilities, ad hoc decision making." }
+                        ]
+                    },
+                    {
+                        id: "p5_3",
+                        text: { ar: "31. هل لديكم نموذج تشغيل محدد يتضمن مركز تميز (CoE) يوضح كيفية تعاون الفرق المركزية مع الوحدات؟", en: "31. Do you have a defined operating model including an AI Center of Excellence (CoE)?" },
+                        options: [
+                            { score: 4, ar: "نموذج تشغيل فعال يوازن بين التنسيق المركزي عبر CoE والتمكين المرن لوحدات العمل.", en: "High-impact operating model balancing CoE standards with unit execution." },
+                            { score: 3, ar: "مركز تميز راسخ يزود بأفضل الممارسات والأدوات ويدعمه نموذج تشغيل.", en: "Established CoE providing best practices and tooling." },
+                            { score: 2, ar: "مركز تميز أولي أو غير رسمي مع غموض المسؤوليات وآليات التعاون.", en: "Early-stage CoE, unclear engagement mechanisms." },
+                            { score: 1, ar: "لا يوجد مركز تميز أو نموذج تشغيل وتعمل الوحدات بصورة مستقلة.", en: "No AI CoE; units act independently." }
+                        ]
+                    },
+                    {
+                        id: "p5_4",
+                        text: { ar: "32. هل تشاركون بصورة استباقية في صياغة السياسات والأطر التنظيمية الوطنية والامتثال؟", en: "32. Do you proactively engage in shaping external AI policies and regulations?" },
+                        options: [
+                            { score: 4, ar: "مشاركة استباقية في الأطر التنظيمية والسياسات العامة لتعزيز المعايير والثقة.", en: "Proactive engagement with policy frameworks contributing to standards." },
+                            { score: 3, ar: "مشاركة منتظمة لمواكبة المستجدات وضمان الامتثال.", en: "Regular engagement to stay informed and compliant." },
+                            { score: 2, ar: "امتثال رد فعلي للمتطلبات الخارجية عند ورودها.", en: "Reactive compliance to external mandates." },
+                            { score: 1, ar: "لا توجد مشاركة أو معرفة بالمتطلبات التنظيمية.", en: "No engagement or awareness of regulations." }
+                        ]
+                    },
+                    {
+                        id: "p5_5",
+                        text: { ar: "33. هل لديكم عمليات تنفيذ تطبق إطاراً للذكاء الاصطناعي الآمن والمسؤول والمراقبة المستمرة للمخاطر؟", en: "33. Do you implement a Safe & Responsible AI framework across the lifecycle?" },
+                        options: [
+                            { score: 4, ar: "تطبيق كامل لممارسات الذكاء المسؤول مع مراقبة مستمرة، تدقيق، وإدارة استباقية للمخاطر.", en: "Embedded Safe & Responsible AI with continuous monitoring and auditability." },
+                            { score: 3, ar: "عمليات تنفيذ موثقة تدمج أمان وخصوصية البيانات والضوابط.", en: "Documented processes embedding security, privacy, and controls." },
+                            { score: 2, ar: "عمليات أوليّة وضوابط الذكاء المسؤول جزئية وتطبق بغير اتساق.", en: "Early processes; partial and inconsistent controls." },
+                            { score: 1, ar: "لا توجد عمليات لتطبيق الذكاء المسؤول وتعالج المخاطر كرد فعل.", en: "No delivery processes for Safe AI; reactive risk handling." }
+                        ]
+                    },
+                    {
+                        id: "p5_6",
+                        text: { ar: "34. هل لديكم أطر لأمن البيانات والخصوصية تتوافق مع مخاطر الذكاء الاصطناعي المحددة (مثل PII وعكس النموذج)؟", en: "34. Do you have data security/privacy frameworks addressing AI-specific risks?" },
+                        options: [
+                            { score: 4, ar: "إطار متين لأمن الذكاء الاصطناعي يعالج مخاطر النماذج ويضمن الحماية بالتجريب والتدقيق.", en: "Robust AI security framework addressing model-specific risks and PII." },
+                            { score: 3, ar: "سياسات بيانات تغطي مخاطر رئيسية مختارة للذكاء الاصطناعي.", en: "Data handling policies covering selected AI risks." },
+                            { score: 2, ar: "تدابير الأمن العامة لتقنية المعلومات تغطي الذكاء جزئياً.", en: "General IT security covers AI partially with limited controls." },
+                            { score: 1, ar: "لا توجد تدابير أمن أو خصوصية مخصصة للذكاء الاصطناعي.", en: "No AI-specific data security or privacy measures." }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Flat array of all 34 questions for easy index navigation
+        let allQuestions = [];
+        pillars.forEach((p, pIdx) => {
+            p.questions.forEach(q => {
+                allQuestions.push({
+                    ...q,
+                    pillarId: p.id,
+                    pillarTitle: p.title,
+                    pillarIndex: pIdx
+                });
+            });
+        });
+
+        // UI Translation strings
+        const i18n = {
+            ar: {
+                navTitle: "تقييم الجاهزية للذكاء الاصطناعي",
+                wBadge: "أداة تقييم مؤسسي • 34 سؤالاً • 5 محاور",
+                wTitle: "تقييم الجاهزية للذكاء الاصطناعي",
+                wDesc: "استبانة لقياس نضج مؤسستكم في تبنّي الذكاء الاصطناعي عبر الرؤية والاستراتيجية، خارطة الطريق وحالات الاستخدام، التقنية والبيانات، المواهب والقدرات، والحوكمة. تستغرق الإجابة نحو 10–15 دقيقة، وستظهر النتائج والرسوم البيانية فور الانتهاء مع إمكانية تصديرها إلى ملف إكسل.",
+                m1: "محاور رئيسية", m2: "سؤالاً", m3: "مستويات نضج",
+                lblName: "اسم الشخص الذي يعبّئ الاستبانة *",
+                lblOrg: "الجهة / الإدارة (اختياري)",
+                phName: "مثال: محمد أحمد", phOrg: "مثال: وزارة كذا — إدارة التحول الرقمي",
+                btnStart: "ابدأ التقييم",
+                wFooter: "يمكنك التنقل بين الأسئلة بحرية، وستُحفظ إجاباتك محلياً في هذه الجلسة فقط.",
+                sbScoreTitle: "النتيجة الحية", sbOutOf: "من 4.0",
+                sbFooter: "تُحفظ إجاباتك في هذه الجلسة فقط، ولا تُشارك مع أي جهة.",
+                btnPrev: "السابق", btnNext: "التالي", btnFinish: "عرض التقرير والنتائج",
+                rBadge: "تم اكتمال التقييم بنجاح",
+                rTitle: "تقرير نضج الجاهزية للذكاء الاصطناعي",
+                rSub: "مُعدّ لـ: ", rScoreLbl: "المؤشر العام للنضج",
+                btnExcel: "تصدير التقرير إلى Excel",
+                chart1: "النضج حسب المحاور الخمسة (Radar Chart)",
+                chart2: "النتيجة التفصيلية لكل محور (Bar Chart)",
+                alertFillName: "يرجى كتابة اسم الشخص المعبئ للاستبانة للبدء."
+            },
+            en: {
+                navTitle: "AI Readiness Assessment",
+                wBadge: "Organizational Tool • 34 Questions • 5 Pillars",
+                wTitle: "AI Readiness Assessment",
+                wDesc: "A questionnaire to evaluate your organization's maturity in AI adoption across strategy, roadmap, technology, talent, and governance. Takes about 10–15 mins, with real-time results and Excel export.",
+                m1: "Main Pillars", m2: "Questions", m3: "Maturity Levels",
+                lblName: "Respondent Name *",
+                lblOrg: "Organization / Department (Optional)",
+                phName: "e.g., John Doe", phOrg: "e.g., Ministry of Tech — Digital Transformation",
+                btnStart: "Start Assessment",
+                wFooter: "Navigate freely between questions. Answers saved locally for this session.",
+                sbScoreTitle: "Live Score", sbOutOf: "out of 4.0",
+                sbFooter: "Answers are stored locally for this session only.",
+                btnPrev: "Previous", btnNext: "Next", btnFinish: "View Report & Results",
+                rBadge: "Assessment Completed Successfully",
+                rTitle: "AI Readiness Maturity Report",
+                rSub: "Prepared for: ", rScoreLbl: "Overall Maturity Index",
+                btnExcel: "Export Report to Excel",
+                chart1: "Maturity by 5 Pillars (Radar Chart)",
+                chart2: "Detailed Score per Pillar (Bar Chart)",
+                alertFillName: "Please enter your name to begin the assessment."
+            }
+        };
+
+        // Initialize / Toggle Language
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+            const t = i18n[currentLang];
+            document.getElementById('lang-btn-text').innerText = currentLang === 'ar' ? 'English' : 'العربية';
+            document.getElementById('nav-title').innerText = t.navTitle;
+            document.getElementById('w-badge').innerText = t.wBadge;
+            document.getElementById('w-title').innerText = t.wTitle;
+            document.getElementById('w-desc').innerText = t.wDesc;
+            document.getElementById('m-1').innerText = t.m1;
+            document.getElementById('m-2').innerText = t.m2;
+            document.getElementById('m-3').innerText = t.m3;
+            document.getElementById('lbl-name').innerText = t.lblName;
+            document.getElementById('lbl-org').innerText = t.lblOrg;
+            document.getElementById('user-name').placeholder = t.phName;
+            document.getElementById('user-org').placeholder = t.phOrg;
+            document.getElementById('btn-start').innerText = t.btnStart;
+            document.getElementById('w-footer').innerText = t.wFooter;
+            document.getElementById('sb-score-title').innerText = t.sbScoreTitle;
+            document.getElementById('sb-out-of').innerText = t.sbOutOf;
+            document.getElementById('sb-footer').innerText = t.sbFooter;
+            document.getElementById('btn-prev').innerText = t.btnPrev;
+            document.getElementById('r-badge').innerText = t.rBadge;
+            document.getElementById('r-title').innerText = t.rTitle;
+            document.getElementById('r-score-lbl').innerText = t.rScoreLbl;
+            document.getElementById('btn-excel-text').innerText = t.btnExcel;
+            document.getElementById('chart1-title').innerText = t.chart1;
+            document.getElementById('chart2-title').innerText = t.chart2;
+
+            if (!document.getElementById('assessment-screen').classList.contains('hidden')) {
+                renderSidebar();
+                renderQuestion();
+            }
+        }
+
+        // Start Assessment
+        function startAssessment() {
+            const nameInput = document.getElementById('user-name').value.trim();
+            const orgInput = document.getElementById('user-org').value.trim();
+
+            if (!nameInput) {
+                alert(i18n[currentLang].alertFillName);
+                return;
+            }
+
+            respondentInfo.name = nameInput;
+            respondentInfo.org = orgInput;
+
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('assessment-screen').classList.remove('hidden');
+
+            renderSidebar();
+            renderQuestion();
+        }
+
+        // Render Sidebar Progress (Matching Image 2)
+        function renderSidebar() {
+            const list = document.getElementById('pillar-progress-list');
+            list.innerHTML = '';
+
+            pillars.forEach((p, idx) => {
+                // calculate answered questions in this pillar
+                let answeredCount = 0;
+                p.questions.forEach(q => {
+                    if (userAnswers[q.id] !== undefined) answeredCount++;
+                });
+
+                const totalInPillar = p.questions.length;
+
+                const item = document.createElement('div');
+                item.className = "text-xs space-y-1";
+                item.innerHTML = `
+                    <div class="flex justify-between text-slate-300">
+                        <span class="truncate max-w-[180px]">${p.title[currentLang]}</span>
+                        <span class="font-bold font-mono">${answeredCount}/${totalInPillar}</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: ${(answeredCount/totalInPillar)*100}%"></div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            // Update Live Score (Overall Out of 4.0)
+            const answeredQIds = Object.keys(userAnswers);
+            if (answeredQIds.length === 0) {
+                document.getElementById('live-score-val').innerText = '0.0';
+            } else {
+                let sum = 0;
+                answeredQIds.forEach(id => sum += userAnswers[id]);
+                const avg = (sum / answeredQIds.length).toFixed(1);
+                document.getElementById('live-score-val').innerText = avg;
+            }
+        }
+
+        // Render Current Question
+        function renderQuestion() {
+            const q = allQuestions[currentQIndex];
+            const t = i18n[currentLang];
+
+            document.getElementById('q-pillar-name').innerText = q.pillarTitle[currentLang];
+            document.getElementById('q-counter').innerText = currentLang === 'ar' ? `سؤال ${currentQIndex + 1} من ${allQuestions.length}` : `Question ${currentQIndex + 1} of ${allQuestions.length}`;
+            document.getElementById('q-text').innerText = q.text[currentLang];
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, oIdx) => {
+                const isSelected = userAnswers[q.id] === opt.score;
+                const card = document.createElement('div');
+                card.className = `card-option border p-4 rounded-xl cursor-pointer flex items-start gap-3 bg-white ${isSelected ? 'selected' : 'border-slate-200'}`;
+                card.onclick = () => selectOption(q.id, opt.score);
+
+                card.innerHTML = `
+                    <div class="mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? 'border-slate-900 bg-slate-900' : 'border-slate-300'}">
+                        ${isSelected ? '<div class="w-2 h-2 rounded-full bg-white"></div>' : ''}
+                    </div>
+                    <div class="text-sm text-slate-700 leading-relaxed font-medium">
+                        ${opt[currentLang]}
+                    </div>
+                `;
+                optionsContainer.appendChild(card);
+            });
+
+            // Update Next/Prev buttons
+            document.getElementById('btn-prev').disabled = currentQIndex === 0;
+            const nextBtn = document.getElementById('btn-next');
+            if (currentQIndex === allQuestions.length - 1) {
+                nextBtn.innerText = t.btnFinish;
+                nextBtn.className = "px-8 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-sm";
+            } else {
+                nextBtn.innerText = t.btnNext;
+                nextBtn.className = "px-8 py-2.5 btn-slate-custom rounded-xl font-bold text-sm shadow-sm";
+            }
+        }
+
+        // Option Click Event
+        function selectOption(qId, score) {
+            userAnswers[qId] = score;
+            renderSidebar();
+            renderQuestion();
+        }
+
+        // Navigation
+        function nextQuestion() {
+            if (currentQIndex < allQuestions.length - 1) {
+                currentQIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQIndex > 0) {
+                currentQIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Show Final Dashboard & Charts
+        function showResults() {
+            document.getElementById('assessment-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+
+            document.getElementById('r-user-display').innerText = `${respondentInfo.name} ${respondentInfo.org ? '(' + respondentInfo.org + ')' : ''}`;
+
+            // Calculate Scores per Pillar
+            let pillarAvgScores = [];
+            let totalSum = 0;
+            let totalAnsweredCount = 0;
+
+            pillars.forEach(p => {
+                let pSum = 0;
+                let pAns = 0;
+                p.questions.forEach(q => {
+                    if (userAnswers[q.id] !== undefined) {
+                        pSum += userAnswers[q.id];
+                        pAns++;
+                    }
+                });
+                const avg = pAns > 0 ? (pSum / pAns) : 0;
+                pillarAvgScores.push(parseFloat(avg.toFixed(2)));
+
+                totalSum += pSum;
+                totalAnsweredCount += pAns;
+            });
+
+            const overallAvg = totalAnsweredCount > 0 ? (totalSum / totalAnsweredCount).toFixed(2) : "0.0";
+            document.getElementById('final-score').innerText = overallAvg;
+
+            // Render Charts
+            const pillarLabels = pillars.map(p => p.title[currentLang]);
+
+            // 1. Radar Chart
+            new Chart(document.getElementById('radarChart'), {
+                type: 'radar',
+                data: {
+                    labels: pillarLabels,
+                    datasets: [{
+                        label: 'مستوى النضج (من 4.0)',
+                        data: pillarAvgScores,
+                        backgroundColor: 'rgba(13, 27, 42, 0.2)',
+                        borderColor: '#0d1b2a',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: { min: 0, max: 4, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+
+            // 2. Bar Chart
+            new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: {
+                    labels: pillarLabels,
+                    datasets: [{
+                        label: 'المؤشر',
+                        data: pillarAvgScores,
+                        backgroundColor: ['#0d1b2a', '#1e293b', '#334155', '#475569', '#64748b'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 0, max: 4, ticks: { stepSize: 1 } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // Export to Excel (.xlsx)
+        function exportExcel() {
+            const data = [];
+
+            // Respondent Metadata
+            data.push({ "الرقم / Item": "المعبئ / Name", "التفاصيل / Details": respondentInfo.name });
+            data.push({ "الرقم / Item": "الجهة / Organization", "التفاصيل / Details": respondentInfo.org || "غير محدد" });
+            data.push({ "الرقم / Item": "التاريخ / Date", "التفاصيل / Details": new Date().toLocaleString() });
+            data.push({ "الرقم / Item": "المؤشر العام / Overall Score", "التفاصيل / Details": document.getElementById('final-score').innerText + " / 4.0" });
+            data.push({}); // Empty row separator
+
+            // Questions & Selected Options
+            allQuestions.forEach((q, idx) => {
+                const score = userAnswers[q.id] || 0;
+                const optObj = q.options.find(o => o.score === score);
+                data.push({
+                    "الرقم / Item": `Q${idx + 1}`,
+                    "التفاصيل / Details": q.text.ar,
+                    "الدرجة / Score": score,
+                    "الخيار المختار / Selected Option": optObj ? optObj.ar : "لم يتم الإجابة"
+                });
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "AI Readiness Results");
+
+            XLSX.writeFile(workbook, `AI_Readiness_Report_${respondentInfo.name.replace(/\s+/g, '_')}.xlsx`);
+        }
+    </script>
+</body>
+</html>

@@ -188,11 +188,9 @@
         let respondentInfo = { name: '', org: '' };
 
         // رابط Google Apps Script الخاص بك
-       
-// استبدل هذا الرابط برابط Google Apps Script الخاص بك
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9g1iD2eme-O3hpACZYwmXR3-bsgDEQgtVbni_ntTXTGeRYDlsvEFOxTRA/exec"; 
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBweqW0adtPvBFXdkb4dgLAlM096fsm_QyNA3AHglAYqhF__ELWDod3colCrh7ioNEbA/exec";
 
-        // دالة إرسال البيانات لسحابة غوغل شيت
+        // 👈 تم إضافة دالة إرسال البيانات
         function sendDataToCloud(payload) {
             const formData = new URLSearchParams();
             formData.append("name", payload.name);
@@ -206,7 +204,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: formData.toString()
             }).then(() => {
-                console.log("تم تسليم البيانات إلى Google Sheets بنجاح!");
+                console.log("تم إرسال البيانات بنجاح إلى Google Sheets");
             }).catch(err => {
                 console.error("خطأ في الاتصال:", err);
             });
@@ -216,7 +214,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
             {
                 id: "p1",
                 title: { ar: "استراتيجية الذكاء الاصطناعي والقيادة", en: "AI Vision, Strategy & Leadership" },
-                maxScore: 7 * 4,
                 questions: [
                     {
                         id: "p1_1",
@@ -293,7 +290,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
             {
                 id: "p2",
                 title: { ar: "تطوير حالات الاستخدام وركائز القيمة", en: "Roadmap, Use Cases & Value Delivery" },
-                maxScore: 9 * 4,
                 questions: [
                     {
                         id: "p2_1",
@@ -349,15 +345,15 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
                         id: "p2_6",
                         text: { ar: "13. هل لديكم عملية محددة لاتخاذ القرار بشأن بناء حلول مخصصة، شراء حلول جاهزة، أو تكييف أدوات الذكاء الاصطناعي التوليدي؟", en: "13. Do you have a structured Build vs. Buy vs. Adapt decision process?" },
                         options: [
-                            { score: 4, ar: "يُطبَّق إطار موحد لاتخاذ القرار على جميع حالات الاستخدام ويوجه الاختيار بين البناء أو الشراء أو التكييف.", en: "Standardized decision framework applied across all AI use cases." },
-                            { score: 3, ar: "يوجد إطار لاتخاذ القرار للمشاريع الرئيسية، لكنه لا يُطبَّق بصورة متسقة.", en: "Decision framework exists for key cases but applied inconsistently." },
+                            { score: 4, ar: "يُطبَّق إطار موحد لاتخاذ القرار على جميع حالات الاستخدام ويوجه الاختيار بين البناء أو الشراء أو التكييف.", en: "Standardized decision framework applied across all AI use cases." },
+                            { score: 3, ar: "يوجد إطار لاتخاذ القرار للمشاريع الرئيسية، لكنه لا يُطبَّق بصورة متسقة.", en: "Decision framework exists for key cases but applied inconsistently." },
                             { score: 2, ar: "تُتَّخذ القرارات بصورة ارتجالية أو غير رسمية.", en: "Ad hoc decisions for major use cases." },
                             { score: 1, ar: "لا توجد عملية منظمة لاتخاذ قرارات المفاضلة.", en: "No structured build vs buy process." }
                         ]
                     },
                     {
                         id: "p2_7",
-                        text: { ar: "14. هل ترتبط حالات استخدام الذكاء الاصطناعي بأثر وقيمة قابلين للقياس وتقيَّم بمؤشرات أداء واضحة؟", en: "14. Are AI use cases linked to measurable impact evaluated via KPIs?" },
+                        text: { ar: "14. هل ترتبط حالات استخدام الذكاء الاصطناعي بأثر وقيمة قابلين للقياس وتقيَّم بمؤشرات أداء واضحة؟", en: "14. Are AI use cases linked to measurable impact evaluated via KPIs?" },
                         options: [
                             { score: 4, ar: "يُقاس أثر الذكاء الاصطناعي بصورة متسقة باستخدام مؤشرات أداء موحدة توجه قرارات الاستثمار.", en: "AI impact consistently measured with standard KPIs guiding investments." },
                             { score: 3, ar: "توجد مؤشرات أداء لبعض حالات الاستخدام مع تفاوت المتابعة.", en: "Clear KPIs for some use cases, tracking varies across teams." },
@@ -379,7 +375,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
                         id: "p2_9",
                         text: { ar: "16. هل لديكم عمليات لجمع الدروس المستفادة من مبادرات الذكاء الاصطناعي وتوثيقها لبناء المعرفة المؤسسية؟", en: "16. Do you systematically capture and reuse learnings to build institutional knowledge?" },
                         options: [
-                            { score: 4, ar: "يُطبَّق نظام شامل للتعلم يتضمن مراجعات بعد التنفيذ ومستودعات معرفة مركزية وإعادة استخدام منهجية.", en: "Comprehensive learning system with post-reviews and centralized knowledge reuse." },
+                            { score: 4, ar: "يُطبَّق نظام شامل للتعلم يتضمن مراجعات بعد التنفيذ ومستودعات معرفة مركزية وإعادة استخدام منهجية.", en: "Comprehensive learning system with post-reviews and centralized knowledge reuse." },
                             { score: 3, ar: "توجد عملية منظمة لجمع الدروس وتوثيقها ومشاركتها مع الفرق المعنية.", en: "Structured process to document and share learnings across relevant teams." },
                             { score: 2, ar: "تُجمع بعض الدروس بصورة غير رسمية والتوثيق غير متسق.", en: "Some learnings captured informally, inconsistent sharing." },
                             { score: 1, ar: "لا توجد آليات رسمية لجمع الدروس المستفادة وتظل حبيسة الفرق.", en: "No formal mechanisms; insights remain siloed." }
@@ -390,7 +386,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
             {
                 id: "p3",
                 title: { ar: "التكنولوجيا والبيانات والبنية التحتية", en: "Technology, Data & AI Architecture" },
-                maxScore: 7 * 4,
                 questions: [
                     {
                         id: "p3_1",
@@ -398,7 +393,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
                         options: [
                             { score: 4, ar: "توجد معمارية متكاملة للذكاء الاصطناعي تدعم النشر الآمن والقابل للتوسع عبر الأنظمة.", en: "Fit-for-purpose architecture supporting secure scalable deployment." },
                             { score: 3, ar: "توجد معمارية عامة مطبقة جزئياً.", en: "High-level architecture exists with partial implementation." },
-                            { score: 2, ar: "توجد مكونات مجزأة وتُطبَّق بصورة غير متسقة.", en: "Fragmented components inconsistently applied." },
+                            { score: 2, ar: "توجد مكونات مجزأة وتُطبَّق بصورة غير متسقة.", en: "Fragmented components inconsistently applied." },
                             { score: 1, ar: "لا توجد معمارية أو إطار تقني للذكاء الاصطناعي.", en: "No AI architecture or framework." }
                         ]
                     },
@@ -467,7 +462,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
             {
                 id: "p4",
                 title: { ar: "المواهب والقدرات وجاهزية الكوادر", en: "Talent, Capabilities & Workforce Readiness" },
-                maxScore: 5 * 4,
                 questions: [
                     {
                         id: "p4_1",
@@ -524,7 +518,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
             {
                 id: "p5",
                 title: { ar: "الحوكمة والنموذج التشغيلي والذكاء المسؤول", en: "Governance, Operating Model & Responsible AI" },
-                maxScore: 6 * 4,
                 questions: [
                     {
                         id: "p5_1",
@@ -832,7 +825,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
             const overallAvg = totalAnsweredCount > 0 ? (totalSum / totalAnsweredCount).toFixed(2) : "0.0";
             document.getElementById('final-score').innerText = overallAvg;
 
-            // 🚀 استدعاء عملية الإرسال لتخزين البيانات في Google Sheets
+            // 👈 تم إضافة استدعاء الأمر هنا لإرسال البيانات مباشرة إلى جدول غوغل شيت فور الانتهاء
             sendDataToCloud({
                 name: respondentInfo.name,
                 org: respondentInfo.org || "غير محدد",
@@ -840,7 +833,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyNdrEPLprp9
                 answers: userAnswers
             });
 
-            // رسم الرسوم البيانية
             const pillarLabels = pillars.map(p => p.title[currentLang]);
 
             new Chart(document.getElementById('radarChart'), {

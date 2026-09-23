@@ -153,7 +153,13 @@
                 <span class="text-xs text-slate-300 mt-1" id="final-level-str">من 4.0</span>
             </div>
 
-            <div class="mt-6 flex justify-center gap-3">
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+                <!-- زر حفظ البيانات في Google Sheet -->
+                <button onclick="saveToGoogleSheet()" id="btn-save-sheet" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span id="btn-save-text">حفظ النتائج في Google Sheet</span>
+                </button>
+
                 <button onclick="exportExcel()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow transition flex items-center gap-2">
                     <i class="fa-solid fa-file-excel"></i>
                     <span id="btn-excel-text">تصدير التقرير إلى Excel</span>
@@ -162,6 +168,7 @@
                     إعادة التقييم
                 </button>
             </div>
+            <p id="save-status-msg" class="text-xs mt-3 font-semibold text-slate-500"></p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -188,27 +195,7 @@
         let respondentInfo = { name: '', org: '' };
 
         // رابط Google Apps Script الخاص بك
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBweqW0adtPvBFXdkb4dgLAlM096fsm_QyNA3AHglAYqhF__ELWDod3colCrh7ioNEbA/exec";
-
-        // 👈 تم إضافة دالة إرسال البيانات
-        function sendDataToCloud(payload) {
-            const formData = new URLSearchParams();
-            formData.append("name", payload.name);
-            formData.append("org", payload.org);
-            formData.append("overallScore", payload.overallScore);
-            formData.append("answers", JSON.stringify(payload.answers));
-
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: formData.toString()
-            }).then(() => {
-                console.log("تم إرسال البيانات بنجاح إلى Google Sheets");
-            }).catch(err => {
-                console.error("خطأ في الاتصال:", err);
-            });
-        }
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmUsW-xiG8xBmqWe-LD_cYmr980jZ6C643me4XTnp3EblerITiVUHsky_0LP4N71-w9g/exec";
 
         const pillars = [
             {
@@ -393,7 +380,7 @@
                         options: [
                             { score: 4, ar: "توجد معمارية متكاملة للذكاء الاصطناعي تدعم النشر الآمن والقابل للتوسع عبر الأنظمة.", en: "Fit-for-purpose architecture supporting secure scalable deployment." },
                             { score: 3, ar: "توجد معمارية عامة مطبقة جزئياً.", en: "High-level architecture exists with partial implementation." },
-                            { score: 2, ar: "توجد مكونات مجزأة وتُطبَّق بصورة غير متسقة.", en: "Fragmented components inconsistently applied." },
+                            { score: 2, ar: "توجد مكونات مجزأة وتُطبَّق بصورة غير متسقة.", en: "Fragmented components inconsistently applied." },
                             { score: 1, ar: "لا توجد معمارية أو إطار تقني للذكاء الاصطناعي.", en: "No AI architecture or framework." }
                         ]
                     },
@@ -614,6 +601,7 @@
                 rTitle: "تقرير نضج الجاهزية للذكاء الاصطناعي",
                 rSub: "مُعدّ لـ: ", rScoreLbl: "المؤشر العام للنضج",
                 btnExcel: "تصدير التقرير إلى Excel",
+                btnSave: "حفظ النتائج في Google Sheet",
                 chart1: "النضج حسب المحاور الخمسة (Radar Chart)",
                 chart2: "النتيجة التفصيلية لكل محور (Bar Chart)",
                 alertFillName: "يرجى كتابة اسم الشخص المعبئ للاستبانة للبدء."
@@ -636,6 +624,7 @@
                 rTitle: "AI Readiness Maturity Report",
                 rSub: "Prepared for: ", rScoreLbl: "Overall Maturity Index",
                 btnExcel: "Export Report to Excel",
+                btnSave: "Save Results to Google Sheet",
                 chart1: "Maturity by 5 Pillars (Radar Chart)",
                 chart2: "Detailed Score per Pillar (Bar Chart)",
                 alertFillName: "Please enter your name to begin the assessment."
@@ -670,6 +659,7 @@
             document.getElementById('r-title').innerText = t.rTitle;
             document.getElementById('r-score-lbl').innerText = t.rScoreLbl;
             document.getElementById('btn-excel-text').innerText = t.btnExcel;
+            document.getElementById('btn-save-text').innerText = t.btnSave;
             document.getElementById('chart1-title').innerText = t.chart1;
             document.getElementById('chart2-title').innerText = t.chart2;
 
@@ -796,6 +786,39 @@
             }
         }
 
+        // دالة حفظ البيانات وإرسالها إلى Google Sheets عبر الـ Web App
+        function saveToGoogleSheet() {
+            const statusMsg = document.getElementById('save-status-msg');
+            const saveBtn = document.getElementById('btn-save-sheet');
+            
+            statusMsg.className = "text-xs mt-3 font-semibold text-blue-600";
+            statusMsg.innerText = currentLang === 'ar' ? "جاري حفظ البيانات على Google Sheet..." : "Saving data to Google Sheet...";
+            saveBtn.disabled = true;
+
+            const payload = {
+                name: respondentInfo.name,
+                org: respondentInfo.org,
+                overallScore: document.getElementById('final-score').innerText,
+                answers: userAnswers
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                statusMsg.className = "text-xs mt-3 font-semibold text-emerald-600";
+                statusMsg.innerText = currentLang === 'ar' ? "✓ تم حفظ كافة البيانات بنجاح في Google Sheet!" : "✓ Data successfully saved to Google Sheet!";
+                saveBtn.disabled = false;
+            }).catch(err => {
+                console.error("خطأ في الإرسال:", err);
+                statusMsg.className = "text-xs mt-3 font-semibold text-red-600";
+                statusMsg.innerText = currentLang === 'ar' ? "✕ حدث خطأ أثناء الحفظ. يرجى المحاولة مرة أخرى." : "✕ Error saving data. Please try again.";
+                saveBtn.disabled = false;
+            });
+        }
+
         function showResults() {
             document.getElementById('assessment-screen').classList.add('hidden');
             document.getElementById('results-screen').classList.remove('hidden');
@@ -825,20 +848,8 @@
             const overallAvg = totalAnsweredCount > 0 ? (totalSum / totalAnsweredCount).toFixed(2) : "0.0";
             document.getElementById('final-score').innerText = overallAvg;
 
-
-
-function sendDataToCloud(payload) {
-    fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    }).then(() => {
-        console.log("تم حفظ الإجابة بنجاح في السحابة!");
-    }).catch(err => console.error("خطأ في الإرسال:", err));
-
-
-}
+            // إرسال البيانات تلقائياً عند الدخول لشاشة النتائج
+            saveToGoogleSheet();
 
             const pillarLabels = pillars.map(p => p.title[currentLang]);
 

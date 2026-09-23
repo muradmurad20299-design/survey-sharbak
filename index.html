@@ -70,7 +70,6 @@
             </p>
         </div>
 
-        <!-- Metric Cards (Matching Image 1) -->
         <div class="grid grid-cols-3 gap-4 mb-8 text-center">
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <div class="text-3xl font-black text-slate-900">5</div>
@@ -86,7 +85,6 @@
             </div>
         </div>
 
-        <!-- User Info Form -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 mb-6">
             <div>
                 <label class="block text-slate-700 font-bold text-sm mb-1" id="lbl-name">اسم الشخص الذي يعبّئ الاستبانة *</label>
@@ -104,9 +102,8 @@
         <p class="text-center text-xs text-slate-400 mt-3" id="w-footer">يمكنك التنقل بين الأسئلة بحرية، وستُحفظ إجاباتك محلياً في هذه الجلسة فقط.</p>
     </section>
 
-    <!-- SCREEN 2: ASSESSMENT INTERFACE (Matching Image 2) -->
+    <!-- SCREEN 2: ASSESSMENT INTERFACE -->
     <section id="assessment-screen" class="hidden flex-1 flex flex-col md:flex-row min-h-[calc(100vh-57px)]">
-        <!-- Sidebar -->
         <aside class="sidebar-dark text-white w-full md:w-80 p-6 flex flex-col justify-between shrink-0">
             <div>
                 <div class="text-xs text-slate-400 uppercase tracking-wider mb-2" id="sb-score-title">النتيجة الحية</div>
@@ -114,40 +111,24 @@
                     <span class="text-4xl font-extrabold" id="live-score-val">0.0</span>
                     <span class="text-slate-400 text-sm" id="sb-out-of">من 4.0</span>
                 </div>
-
                 <hr class="border-slate-800 mb-6">
-
-                <!-- Progress Bars per Pillar -->
-                <div class="space-y-4" id="pillar-progress-list">
-                    <!-- Progress items injected dynamically -->
-                </div>
+                <div class="space-y-4" id="pillar-progress-list"></div>
             </div>
-
             <div class="text-xs text-slate-500 mt-8" id="sb-footer">
                 تُحفظ إجاباتك في هذه الجلسة فقط، ولا تُشارك مع أي جهة.
             </div>
         </aside>
 
-        <!-- Main Question Area -->
         <main class="flex-1 p-6 md:p-12 max-w-4xl mx-auto flex flex-col justify-between">
             <div>
-                <!-- Question Header -->
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md" id="q-pillar-name">استراتيجية الذكاء الاصطناعي</span>
                     <span class="text-xs font-semibold text-slate-400" id="q-counter">سؤال 1 من 34</span>
                 </div>
-
-                <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-6 leading-snug" id="q-text">
-                    1. هل لديكم رؤية واضحة وموثقة للذكاء الاصطناعي تتوافق مع استراتيجيتكم العامة والأولويات الوطنية؟
-                </h2>
-
-                <!-- Options -->
-                <div class="space-y-3" id="options-container">
-                    <!-- Options injected dynamically -->
-                </div>
+                <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-6 leading-snug" id="q-text"></h2>
+                <div class="space-y-3" id="options-container"></div>
             </div>
 
-            <!-- Navigation Buttons -->
             <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
                 <button onclick="prevQuestion()" id="btn-prev" class="px-6 py-2.5 bg-white border border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 text-sm">
                     السابق
@@ -183,7 +164,6 @@
             </div>
         </div>
 
-        <!-- Charts Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                 <h3 class="font-bold text-slate-800 mb-4 text-center text-sm" id="chart1-title">النضج حسب المحاور الخمسة (Radar Chart)</h3>
@@ -204,14 +184,32 @@
     <script>
         let currentLang = 'ar';
         let currentQIndex = 0;
-        let userAnswers = {}; // { qId: score }
+        let userAnswers = {}; 
         let respondentInfo = { name: '', org: '' };
-   // استبدل هذا الرابط برابط Google Apps Script الخاص بك
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3rbA33SHaNbtzTSHwg-M1uCtExDUqA3KHW7aBbRKHRa3RNnpTG8bR7J8/exec";
 
+        // رابط Google Apps Script الخاص بك
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBweqW0adtPvBFXdkb4dgLAlM096fsm_QyNA3AHglAYqhF__ELWDod3colCrh7ioNEbA/exec";
 
+        // دالة إرسال البيانات لسحابة غوغل شيت
+        function sendDataToCloud(payload) {
+            const formData = new URLSearchParams();
+            formData.append("name", payload.name);
+            formData.append("org", payload.org);
+            formData.append("overallScore", payload.overallScore);
+            formData.append("answers", JSON.stringify(payload.answers));
 
-        // DATA STRUCTURE: 5 Pillars / 34 Questions
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: formData.toString()
+            }).then(() => {
+                console.log("تم تسليم البيانات إلى Google Sheets بنجاح!");
+            }).catch(err => {
+                console.error("خطأ في الاتصال:", err);
+            });
+        }
+
         const pillars = [
             {
                 id: "p1",
@@ -340,9 +338,9 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
                         text: { ar: "12. إلى أي مدى توظفون الذكاء الاصطناعي لدعم صياغة السياسات القائمة على الأدلة والنمذجة التنبؤية؟", en: "12. To what extent is AI leveraged for evidence-based policy making?" },
                         options: [
                             { score: 4, ar: "يُوظَّف الذكاء الاصطناعي بصورة شاملة لدعم صياغة السياسات والنمذجة التنبؤية ومحاكاة السياسات ورصد الامتثال.", en: "AI comprehensively leveraged for predictive policy modeling and simulation." },
-                            { score: 3, ar: "يُوظَّف الذكاء الاصطناعي لدعم بعض جوانب صياغة السياسات.", en: "AI leveraged for select policy-making aspects." },
+                            { score: 3, ar: "يُوظَّف الذكاء الاصطناعي لدعم بعض جوانب صياغة السياسات.", en: "AI leveraged for select policy-making aspects." },
                             { score: 2, ar: "يُوظَّف الذكاء الاصطناعي بصورة غير منهجية وحسب الحاجة.", en: "Ad hoc policy AI usage." },
-                            { score: 1, ar: "لا يُوظَّف الذكاء الاصطناعي في صياغة السياسات.", en: "AI is not used for policy making." }
+                            { score: 1, ar: "لا يُوظَّف الذكاء الاصطناعي في صياغة السياسات.", en: "AI is not used for policy making." }
                         ]
                     },
                     {
@@ -590,7 +588,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             }
         ];
 
-        // Flat array of all 34 questions for easy index navigation
         let allQuestions = [];
         pillars.forEach((p, pIdx) => {
             p.questions.forEach(q => {
@@ -603,7 +600,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             });
         });
 
-        // UI Translation strings
         const i18n = {
             ar: {
                 navTitle: "تقييم الجاهزية للذكاء الاصطناعي",
@@ -651,7 +647,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             }
         };
 
-        // Initialize / Toggle Language
         function toggleLanguage() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar';
             document.documentElement.lang = currentLang;
@@ -689,7 +684,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             }
         }
 
-        // Start Assessment
         function startAssessment() {
             const nameInput = document.getElementById('user-name').value.trim();
             const orgInput = document.getElementById('user-org').value.trim();
@@ -709,13 +703,11 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             renderQuestion();
         }
 
-        // Render Sidebar Progress (Matching Image 2)
         function renderSidebar() {
             const list = document.getElementById('pillar-progress-list');
             list.innerHTML = '';
 
-            pillars.forEach((p, idx) => {
-                // calculate answered questions in this pillar
+            pillars.forEach(p => {
                 let answeredCount = 0;
                 p.questions.forEach(q => {
                     if (userAnswers[q.id] !== undefined) answeredCount++;
@@ -737,7 +729,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
                 list.appendChild(item);
             });
 
-            // Update Live Score (Overall Out of 4.0)
             const answeredQIds = Object.keys(userAnswers);
             if (answeredQIds.length === 0) {
                 document.getElementById('live-score-val').innerText = '0.0';
@@ -749,7 +740,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             }
         }
 
-        // Render Current Question
         function renderQuestion() {
             const q = allQuestions[currentQIndex];
             const t = i18n[currentLang];
@@ -761,7 +751,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
 
-            q.options.forEach((opt, oIdx) => {
+            q.options.forEach(opt => {
                 const isSelected = userAnswers[q.id] === opt.score;
                 const card = document.createElement('div');
                 card.className = `card-option border p-4 rounded-xl cursor-pointer flex items-start gap-3 bg-white ${isSelected ? 'selected' : 'border-slate-200'}`;
@@ -778,7 +768,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
                 optionsContainer.appendChild(card);
             });
 
-            // Update Next/Prev buttons
             document.getElementById('btn-prev').disabled = currentQIndex === 0;
             const nextBtn = document.getElementById('btn-next');
             if (currentQIndex === allQuestions.length - 1) {
@@ -790,14 +779,12 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             }
         }
 
-        // Option Click Event
         function selectOption(qId, score) {
             userAnswers[qId] = score;
             renderSidebar();
             renderQuestion();
         }
 
-        // Navigation
         function nextQuestion() {
             if (currentQIndex < allQuestions.length - 1) {
                 currentQIndex++;
@@ -814,14 +801,12 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             }
         }
 
-        // Show Final Dashboard & Charts
         function showResults() {
             document.getElementById('assessment-screen').classList.add('hidden');
             document.getElementById('results-screen').classList.remove('hidden');
 
             document.getElementById('r-user-display').innerText = `${respondentInfo.name} ${respondentInfo.org ? '(' + respondentInfo.org + ')' : ''}`;
 
-            // Calculate Scores per Pillar
             let pillarAvgScores = [];
             let totalSum = 0;
             let totalAnsweredCount = 0;
@@ -845,21 +830,17 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             const overallAvg = totalAnsweredCount > 0 ? (totalSum / totalAnsweredCount).toFixed(2) : "0.0";
             document.getElementById('final-score').innerText = overallAvg;
 
-            function sendDataToCloud(payload) {
-    fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    }).then(() => {
-        console.log("تم حفظ الإجابة بنجاح في السحابة!");
-    }).catch(err => console.error("خطأ في الإرسال:", err));
-}
+            // 🚀 استدعاء عملية الإرسال لتخزين البيانات في Google Sheets
+            sendDataToCloud({
+                name: respondentInfo.name,
+                org: respondentInfo.org || "غير محدد",
+                overallScore: overallAvg,
+                answers: userAnswers
+            });
 
-            // Render Charts
+            // رسم الرسوم البيانية
             const pillarLabels = pillars.map(p => p.title[currentLang]);
 
-            // 1. Radar Chart
             new Chart(document.getElementById('radarChart'), {
                 type: 'radar',
                 data: {
@@ -882,7 +863,6 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
                 }
             });
 
-            // 2. Bar Chart
             new Chart(document.getElementById('barChart'), {
                 type: 'bar',
                 data: {
@@ -905,18 +885,14 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJdo_Qz_ok3r
             });
         }
 
-        // Export to Excel (.xlsx)
         function exportExcel() {
             const data = [];
-
-            // Respondent Metadata
             data.push({ "الرقم / Item": "المعبئ / Name", "التفاصيل / Details": respondentInfo.name });
             data.push({ "الرقم / Item": "الجهة / Organization", "التفاصيل / Details": respondentInfo.org || "غير محدد" });
             data.push({ "الرقم / Item": "التاريخ / Date", "التفاصيل / Details": new Date().toLocaleString() });
             data.push({ "الرقم / Item": "المؤشر العام / Overall Score", "التفاصيل / Details": document.getElementById('final-score').innerText + " / 4.0" });
-            data.push({}); // Empty row separator
+            data.push({});
 
-            // Questions & Selected Options
             allQuestions.forEach((q, idx) => {
                 const score = userAnswers[q.id] || 0;
                 const optObj = q.options.find(o => o.score === score);

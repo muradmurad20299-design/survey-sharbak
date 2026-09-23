@@ -825,13 +825,20 @@
             const overallAvg = totalAnsweredCount > 0 ? (totalSum / totalAnsweredCount).toFixed(2) : "0.0";
             document.getElementById('final-score').innerText = overallAvg;
 
-            // 👈 تم إضافة استدعاء الأمر هنا لإرسال البيانات مباشرة إلى جدول غوغل شيت فور الانتهاء
-            sendDataToCloud({
-                name: respondentInfo.name,
-                org: respondentInfo.org || "غير محدد",
-                overallScore: overallAvg,
-                answers: userAnswers
-            });
+
+
+function sendDataToCloud(payload) {
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    }).then(() => {
+        console.log("تم حفظ الإجابة بنجاح في السحابة!");
+    }).catch(err => console.error("خطأ في الإرسال:", err));
+
+
+}
 
             const pillarLabels = pillars.map(p => p.title[currentLang]);
 
